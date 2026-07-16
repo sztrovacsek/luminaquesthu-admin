@@ -21,11 +21,6 @@ update public.profiles set role = 'quest_manager' where id =
   (select id from auth.users where email = 'kerdesfelelos@iskola.hu');
 ```
 
-*(There's an earlier migration, `20260716130000_relax_staff_task_access.sql`,
-from a first pass at this that let any teacher edit any task — it's
-superseded by this one. If you already applied it, this migration cleanly
-replaces its policies; you don't need to undo it first.)*
-
 ## 3. Authentication — recommended approach
 
 You haven't picked an auth method yet, so here's a concrete recommendation
