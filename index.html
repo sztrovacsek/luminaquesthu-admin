@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumina · Feladat szerkesztő</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="login-view" class="view">
+  <div class="login-card">
+    <p class="brand">Lumina <span>admin</span></p>
+    <h1>Bejelentkezés</h1>
+    <p class="muted">Add meg az e-mail címed, és küldünk egy bejelentkező linket.</p>
+    <input type="email" id="login-email" placeholder="nev@iskola.hu" autocomplete="email">
+    <button id="login-btn" class="btn primary">Link küldése</button>
+    <p id="login-msg" class="msg"></p>
+  </div>
+</div>
+
+<div id="denied-view" class="view" style="display:none">
+  <div class="login-card">
+    <p class="brand">Lumina <span>admin</span></p>
+    <h1>Nincs jogosultságod</h1>
+    <p class="muted">Ez a fiók nem tanár vagy admin szerepkörű. Kérj hozzáférést egy adminisztrátortól.</p>
+    <button id="denied-signout" class="btn">Kijelentkezés</button>
+  </div>
+</div>
+
+<div id="app-view" class="view" style="display:none">
+  <header class="topbar">
+    <p class="brand">Lumina <span>admin</span></p>
+    <div class="topbar-right">
+      <span id="user-badge" class="muted"></span>
+      <button id="signout-btn" class="btn">Kijelentkezés</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <label class="field-label">Világ</label>
+      <select id="world-select"></select>
+      <label class="field-label">Feladatsor (quest)</label>
+      <select id="quest-select"></select>
+      <button id="new-task-btn" class="btn primary" style="width:100%; margin-top:16px">+ Új feladat</button>
+      <div id="quest-stats" class="muted" style="margin-top:12px; font-size:13px"></div>
+    </aside>
+
+    <section class="task-list-panel">
+      <table class="task-table">
+        <thead>
+          <tr><th>Nehézség</th><th>Típus</th><th>Feladat</th><th>Állapot</th><th>XP</th><th></th></tr>
+        </thead>
+        <tbody id="task-tbody"></tbody>
+      </table>
+    </section>
+
+    <section id="editor-panel" class="editor-panel" style="display:none">
+      <div class="editor-header">
+        <h2 id="editor-title">Feladat szerkesztése</h2>
+        <button id="editor-close" class="btn">Bezár</button>
+      </div>
+      <div id="editor-body"></div>
+      <div class="editor-footer">
+        <p id="editor-msg" class="msg"></p>
+        <button id="editor-save" class="btn primary">Mentés</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
