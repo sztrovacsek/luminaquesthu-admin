@@ -13,27 +13,9 @@ tables, not by keeping this key secret.
 
 ## 2. Apply the role/RLS migration
 
-Run `supabase/migrations/20260716140000_add_quest_manager_role.sql` against
-your project (`supabase db push`, or paste it into the SQL editor). It sets
-up the permission model this app expects:
-
-| Role | Can see | Can edit |
-|---|---|---|
-| `student` | published tasks only | nothing |
-| `teacher` | published tasks + their own (any status) | only tasks they authored |
-| `quest_manager` | every task | every task |
-| `admin` | every task | every task, plus hard delete |
-
-This means a plain teacher **cannot** edit the AI-generated tasks from the
-seed scripts (`author_id` is `null` on those — nobody authored them, so a
-regular teacher has no authorship claim to them). That's deliberate: review
-of AI-generated content is a `quest_manager` job. A teacher who wants to
-build on an AI task instead **duplicates** it — that creates a new row with
-`author_id` set to themselves, which they can then edit freely. The app
-already implements this: tasks you can't edit show a "Megtekint" (view-only)
-button instead of "Szerkeszt", but "Másol" (duplicate) is always available.
-
-Promote a user once they're invited:
+Some teachers will have a quest manager role, which means they can edit
+AI-generated tasks in the quests. Grant this role in Supabase. Here's how.
+Promote a teahcer once they're invited:
 ```sql
 update public.profiles set role = 'quest_manager' where id =
   (select id from auth.users where email = 'kerdesfelelos@iskola.hu');
