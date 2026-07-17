@@ -1,4 +1,4 @@
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ---------------------------------------------------------------- helpers --
 
@@ -62,13 +62,13 @@ document.getElementById('login-btn').onclick = async () => {
   const email = document.getElementById('login-email').value.trim();
   const msg = document.getElementById('login-msg');
   if (!email) return;
-  const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } });
+  const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } });
   msg.textContent = error ? error.message : 'Link elküldve, nézd meg az e-mailjeidet.';
   msg.className = 'msg ' + (error ? 'err' : 'ok');
 };
 
-document.getElementById('signout-btn').onclick = () => supabase.auth.signOut();
-document.getElementById('denied-signout').onclick = () => supabase.auth.signOut();
+document.getElementById('signout-btn').onclick = () => sb.auth.signOut();
+document.getElementById('denied-signout').onclick = () => sb.auth.signOut();
 
 let currentUser = null;
 let currentRole = null;
@@ -81,7 +81,7 @@ async function handleSession(session) {
     return;
   }
   currentUser = session.user;
-  const { data: profile, error } = await supabase
+  const { data: profile, error } = await sb
     .from('profiles').select('role, full_name').eq('id', currentUser.id).single();
 
   if (error || !profile || profile.role === 'student') {
@@ -95,8 +95,8 @@ async function handleSession(session) {
   await loadWorlds();
 }
 
-supabase.auth.onAuthStateChange((_event, session) => handleSession(session));
-supabase.auth.getSession().then(({ data }) => handleSession(data.session));
+sb.auth.onAuthStateChange((_event, session) => handleSession(session));
+sb.auth.getSession().then(({ data }) => handleSession(data.session));
 
 // -------------------------------------------------------------- data load --
 
@@ -106,7 +106,7 @@ const taskTbody = document.getElementById('task-tbody');
 const questStats = document.getElementById('quest-stats');
 
 async function loadWorlds() {
-  const { data, error } = await supabase.from('world').select('id, name').order('name');
+  const { data, error } = await sb.from('world').select('id, name').order('name');
   if (error) return console.error(error);
   worldSelect.innerHTML = data.map(w => `<option value="${w.id}">${escapeHtml(w.name)}</option>`).join('');
   await loadQuests();
@@ -115,7 +115,7 @@ worldSelect.onchange = loadQuests;
 
 async function loadQuests() {
   const worldId = worldSelect.value;
-  const { data, error } = await supabase.from('quest')
+  const { data, error } = await sb.from('quest')
     .select('id, title, grade_band, order_index')
     .eq('world_id', worldId).order('grade_band').order('order_index');
   if (error) return console.error(error);
@@ -129,7 +129,7 @@ let tasksCache = [];
 async function loadTasks() {
   const questId = questSelect.value;
   if (!questId) { taskTbody.innerHTML = ''; questStats.textContent = ''; return; }
-  const { data, error } = await supabase.from('task').select('*').eq('quest_id', questId).order('difficulty');
+  const { data, error } = await sb.from('task').select('*').eq('quest_id', questId).order('difficulty');
   if (error) { console.error(error); return; }
   tasksCache = data;
   renderTaskTable();
@@ -205,7 +205,7 @@ window.duplicateTask = function (taskId) {
 
 window.archiveTask = async function (taskId) {
   if (!confirm('Biztosan archiválod ezt a feladatot?')) return;
-  const { error } = await supabase.from('task').update({ status: 'archived' }).eq('id', taskId);
+  const { error } = await sb.from('task').update({ status: 'archived' }).eq('id', taskId);
   if (error) return alert(error.message);
   await loadTasks();
 };
@@ -468,8 +468,8 @@ document.getElementById('editor-save').onclick = async () => {
   editorMsg.className = 'msg';
 
   const { error } = isNewTask
-    ? await supabase.from('task').insert(payload)
-    : await supabase.from('task').update(payload).eq('id', t.id);
+    ? await sb.from('task').insert(payload)
+    : await sb.from('task').update(payload).eq('id', t.id);
 
   if (error) {
     editorMsg.textContent = error.message;
